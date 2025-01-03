@@ -7,10 +7,9 @@ import (
 	"testing"
 )
 
-// 해당 테스트 진행 전 해야될 작업들
+// 실제로 전송 테스트하기 위한 코드. 아래 명령대로 실행 후 새로운 터미널에서 $ go test
 // $ docker compose up -d
 // $ go run . localhost:9092
-// $ go test (새로운 터미널에서)
 func TestProduce(t *testing.T) {
 	ev := Event{
 		Topic: "test",
