@@ -17,7 +17,7 @@ type Event struct {
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Fprintf(os.Stderr, "Usage: %s <bootstrap-servers>\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %s bootstrap-servers>\n", os.Args[0])
 		os.Exit(1)
 	}
 
@@ -51,7 +51,9 @@ func main() {
 	http.HandleFunc("/produce", func(w http.ResponseWriter, r *http.Request) {
 		var ev Event
 		if err := json.NewDecoder(r.Body).Decode(&ev); err != nil {
-			fmt.Printf("Invalid json: %v\n", err)
+			fmt.Printf("요청 형식이 잘못되었습니다: %v\n", err)
+			http.Error(w, "요청 형식이 잘못되었습니다.", http.StatusBadRequest)
+			return
 		}
 
 		defer r.Body.Close()
@@ -70,7 +72,9 @@ func main() {
 				err = p.Produce(msg, nil)
 				// 얼마나 재시도할지, 언제 실패로 보고 넘어갈지 확인
 			} else {
-				fmt.Printf("Failed to produce message: %v\n", err)
+				fmt.Printf("전송이 실패했습니다: %v\n", err)
+				http.Error(w, "전송이 실패했습니다.", http.StatusInternalServerError)
+				return
 			}
 		}
 
